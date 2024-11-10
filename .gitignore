@@ -1,0 +1,9 @@
+*.o
+*.s
+*.d
+*.elf
+*.sav
+*.gba
+*.h
+*.map
+Makefile
