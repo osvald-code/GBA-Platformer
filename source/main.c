@@ -1,7 +1,7 @@
 #include <string.h>
 #include <tonc.h>
 #include <stdlib.h>
-#include "yuialt.h"
+#include "yui_hitbox.h"
 #include "yui.h"
 #include "bg_test.h"
 
@@ -79,11 +79,11 @@ void move_x(Object *object){
 }
 
 void move_y(Object *object){
-	//int vert_in = 1*key_tri_vert();
+	int vert_in = -1*key_tri_vert();
 	Sprite *sprite = sprites[object->sprite_id];
-	sprite->y -= object->y_speed; 
-	object->bbox[2] -= object->y_speed;
-	object->bbox[3] -= object->y_speed;
+	sprite->y -= vert_in; 
+	object->bbox[2] -= vert_in;
+	object->bbox[3] -= vert_in;
 }
 
 void move_set(Sprite *sprite)
@@ -228,12 +228,15 @@ void load_level_objects(){
 
 void load_vram(){
 	//obj1
-	memcpy32(&tile_mem[4][0], yuiTiles, yuiTilesLen / sizeof(u32));
-	memcpy16(&pal_obj_mem[0], yuiPal, yuiPalLen / sizeof(u16));
+	//memcpy32(&tile_mem[4][0], yuiTiles, yuiTilesLen / sizeof(u32));
+	//memcpy16(&pal_obj_mem[0], yuiPal, yuiPalLen / sizeof(u16));
+
+	memcpy32(&tile_mem[4][0], yui_hitboxTiles, yui_hitboxTilesLen / sizeof(u32));
+	memcpy16(&pal_obj_mem[0], yui_hitboxPal, yui_hitboxPalLen / sizeof(u16));
 
 	//obj2
-	memcpy32(&tile_mem[4][20], yuialtTiles, yuialtTilesLen / sizeof(u32));
-	memcpy16(&pal_obj_mem[16], yuialtPal, yuialtPalLen / sizeof(u16));
+	//memcpy32(&tile_mem[4][20], yuialtTiles, yuialtTilesLen / sizeof(u32));
+	//memcpy16(&pal_obj_mem[16], yuialtPal, yuialtPalLen / sizeof(u16));
 
 	// Load palette
 	memcpy16(pal_bg_mem, bg_testPal, bg_testPalLen / sizeof(u16));
@@ -243,27 +246,10 @@ void load_vram(){
 	memcpy32(&se_mem[30][0], bg_testMap, bg_testMapLen / sizeof(u32));	
 }
 
-// Define a red 1x1 tile for the hitbox
-const u16 hitbox_tile[8] = {
-    0x1F, 0x1F, 0x1F, 0x1F,  // Red tile
-    0x1F, 0x1F, 0x1F, 0x1F
-};
-
-void draw_hitbox(int x, int y) {
-    for (int i = 0; i < 3; i++) {  // 3x3 hitbox
-        for (int j = 0; j < 3; j++) {
-			int index = (y + j) * 32 + (x + i);
-            ((u16*) 0x06000000)[index] = 0;  // 0 is the tile index for the hitbox tile
-        }
-    }
-}
-
 int main()
 {
 	load_vram();
 	REG_DISPCNT= DCNT_OBJ | DCNT_OBJ_1D | DCNT_MODE0 | DCNT_BG0;
-	memcpy((void*)0x06008000, (const void*)hitbox_tile, sizeof(hitbox_tile));
-	draw_hitbox(5, 5);
 	//tte_init_chr4c_b4_default(0, BG_CBB(2)|BG_SBB(31));
    // tte_write("#{P:72,64}");        // Goto (72, 64).
     //tte_write("Hello World!");      // Print "Hello world!"*/
@@ -281,9 +267,9 @@ int main()
 	
 	oam_init(obj_buffer, 128);
 	Player *plr = load_player();
-	Object *plr2 = init_object(96+16,96+32,0,0,
+	/*Object *plr2 = init_object(96+16,96+32,0,0,
 		init_sprite(96+16,0, 20,1, 1, ATTR0_SQUARE,ATTR1_SIZE_16x16)
-	);
+	);*/
 	//((OBJ_ATTR *)&obj_buffer[plr2->sprite->buffer_id])->attr1 ^= ATTR1_HFLIP; 
 	
 	//Object* floor = init_object(1,-1,100,64,100+16,64+8);
